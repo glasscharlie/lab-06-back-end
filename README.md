@@ -21,3 +21,15 @@
 
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that help
+
+--------------------------------------------------------------
+
+Number and name of feature:2. Locations:
+
+Estimate of time needed to complete: 1 hour
+
+Start time:9:30
+
+Finish time:10:56
+
+Actual time needed to complete: 1 hour 26 minutes
