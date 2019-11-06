@@ -14,10 +14,17 @@ app.get('/weather', weatherHandler);
 app.use('*', notFoundHandler);
 app.use(errorHandler);
 
+
 function locationHandler (request, response) {
-  const geoData = require('./data/geo.json');
-  const locationData = new Location('seattle', geoData);
-  response.status(200).json(locationData);
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${request.query.data}&=${process.env.LOCATION-API-KEY}`;
+  const superagent = require('superagent');
+  // const geoData = require('./data/geo.json');
+  superagent.get(url)
+    .then(data => {
+      let locationData = new Location(request.query.data, data.body);
+      response.status(200).json(locationData)
+        .catch(error => errorHandler(error, request, response));
+    });
 }
 
 function Location(city, geoData) {
@@ -28,7 +35,9 @@ function Location(city, geoData) {
 
 }
 
+
 function weatherHandler(request, response) {
+  const url = `https://api.darksky.net/forecast/${process.env.WEATHER-API-KEY}/${request.query.data.latitude},${request.query.data.longitude}`;
   const weatherData = require('./data/darksky.json');
   const weatherSummaries = [];
   weatherData.daily.data.forEach( (day) => {
