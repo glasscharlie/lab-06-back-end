@@ -9,15 +9,14 @@ const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 3000;
 
-app.get('/cool', locationHandler);
+app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.use('*', notFoundHandler);
 app.use(errorHandler);
 
 function locationHandler (request, response) {
   const geoData = require('./data/geo.json');
-  const city = require.query.data;
-  const locationData = new Location(city, geoData);
+  const locationData = new Location('seattle', geoData);
   response.status(200).json(locationData);
 }
 
@@ -30,10 +29,10 @@ function Location(city, geoData) {
 }
 
 function weatherHandler(request, response) {
-  const weatherData = require('.data/darksky.json');
+  const weatherData = require('./data/darksky.json');
   const weatherSummaries = [];
   weatherData.daily.data.forEach( (day) => {
-    weatherSummaries.push( new Weather(day) )
+    weatherSummaries.push( new Weather(day) );
   });
   response.status(200).json(weatherSummaries);
 }
