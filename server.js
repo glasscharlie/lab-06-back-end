@@ -6,19 +6,20 @@ const cors = require('cors');
 
 //application constant
 const app = express();
+app.use(cors());
 const PORT = process.env.PORT || 3000;
 
-app.get('/cool', (req, res) => {
-  res.send('cool data from the /cool route');
-});
+app.get('/cool', locationHandler);
+app.get('/weather', weatherHandler);
+app.use('*', notFoundHandler);
+app.use(errorHandler);
 
-app.get('/location', (req, res) => {
-  //send users location back to them
+function locationHandler (request, response) {
   const geoData = require('./data/geo.json');
-  const city = req.query.data;
+  const city = require.query.data;
   const locationData = new Location(city, geoData);
-  res.send(locationData);
-});
+  response.status(200).json(locationData);
+}
 
 function Location(city, geoData) {
   this.search_query = city;
@@ -27,6 +28,30 @@ function Location(city, geoData) {
   this.longitude = geoData.results[0].geometry.location.lng;
 
 }
+
+function weatherHandler(request, response) {
+  const weatherData = require('.data/darksky.json');
+  const weatherSummaries = [];
+  weatherData.daily.data.forEach( (day) => {
+    weatherSummaries.push( new Weather(day) )
+  });
+  response.status(200).json(weatherSummaries);
+}
+
+function Weather(day){
+  this.forcast = day.summary;
+  this.time = new Date( day.time * 1000).toString().slice(0,15);
+}
+
+
+function notFoundHandler(request, response) {
+  response.status(404).send('not found');
+}
+
+function errorHandler(error, request, response) {
+  response.status(500).send(error);
+}
+
 
 app.listen(PORT, () =>{
   console.log(`listening to PORT ${PORT}`);
